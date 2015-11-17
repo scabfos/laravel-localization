@@ -140,6 +140,7 @@ class LaravelLocalization
 	 */
 	public function setLocale($locale = null)
 	{
+
 		if (empty($locale) || !is_string($locale))
 		{
 			// If the locale has not been passed through the function
@@ -149,6 +150,7 @@ class LaravelLocalization
 
 		if (!empty($this->supportedLocales[$locale]))
 		{
+
 			$this->currentLocale = $locale;
 		}
 		else
@@ -164,7 +166,12 @@ class LaravelLocalization
 			// we have to assume we are routing to a defaultLocale route.
 			if ($this->hideDefaultLocaleInURL())
 			{
-				$this->currentLocale = $this->defaultLocale;
+				if(Session::has('language')){
+					$this->currentLocale = Session::get('language');	
+				}else {
+					$this->currentLocale = $this->defaultLocale;	
+				}
+				
 			}
 			// but if hideDefaultLocaleInURL is false, we have
 			// to retrieve it from the session/cookie/browser...
@@ -182,12 +189,14 @@ class LaravelLocalization
 		if ($this->useCookieLocale())
 		{
 			Cookie::queue(Cookie::forever('language', $this->currentLocale));
+
 		}
 		//Forget the language cookie if it's disabled and exists
 		else if (Cookie::get('language') != null)
 		{
 			Cookie::forget('language');
 		}
+
 		return $locale;
 	}
 
@@ -478,12 +487,14 @@ class LaravelLocalization
 	 */
 	public function getCurrentLocale()
 	{
+
 		if ($this->currentLocale)
 		{
 			return $this->currentLocale;
 		}
 		$locales = $this->getSupportedLocales();
 		// get session language...
+
 		if ($this->useSessionLocale() && Session::has('language'))
 		{
 			return Session::get('language');
